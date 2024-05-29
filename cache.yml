@@ -1,0 +1,26 @@
+name: cache purge
+
+on:
+  push:
+    branches:
+      - main
+# on main branch push
+    paths-ignore:
+      - '**/README.md'
+# ignores readme changes and wont trigger it
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: purge cache
+# CF_ZONE_ID = your cloudflare zone id
+# CF_API_TOKEN = your cloudflare api token with cache clearing access
+# ^ set them as repository variables
+              run: | 
+                curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CF_ZONE_ID }}/purge_cache" \
+                -H "Authorization: Bearer ${{ secrets.CF_API_TOKEN }}" \
+                -H "Content-Type: application/json" \
+                --data '{"purge_everything":true}'
+
+                
